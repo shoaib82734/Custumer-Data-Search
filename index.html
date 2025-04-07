@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Customer Lookup - SHOAIB CSC CENTER</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f4f4f4;
+      color: #333;
+    }
+    h2 {
+      text-align: center;
+      color: #c8102e;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      position: relative;
+    }
+    input, button {
+      padding: 12px;
+      margin: 10px 0;
+      width: 100%;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    button {
+      background-color: #c8102e;
+      color: #fff;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #a60d24;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: left;
+      font-size: 14px;
+    }
+    th {
+      background-color: #c8102e;
+      color: #fff;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 14px;
+      color: #888;
+    }
+    .form-container {
+      display: none;
+      margin-top: 20px;
+    }
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      background-color: #fff;
+      min-width: 160px;
+      box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+      z-index: 1;
+    }
+    .dropdown-content button {
+      width: 100%;
+      text-align: left;
+      background: none;
+      color: #333;
+      padding: 12px;
+      border: none;
+      border-bottom: 1px solid #ddd;
+    }
+    .dropdown-content button:hover {
+      background-color: #f1f1f1;
+    }
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+    .dot-menu {
+      font-size: 24px;
+      cursor: pointer;
+      padding: 8px;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="top-bar">
+      <div>
+        <h2>Customer Lookup</h2>
+        <p style="text-align: left; font-size: 18px;">SHOAIB CSC CENTER</p>
+      </div>
+      <div class="dropdown">
+        <div class="dot-menu">⋮</div>
+        <div class="dropdown-content">
+          <button onclick="toggleAddCustomerForm()">Add Customer</button>
+          <button onclick="fetchAllCustomers()">View All Customers</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-container" id="addCustomerForm">
+      <h3>Add Customer Data</h3>
+      <input type="text" id="name" placeholder="Enter Customer Name">
+      <input type="text" id="mobile" placeholder="Enter Mobile Number">
+      <input type="text" id="customerId" placeholder="Enter Customer ID">
+      <input type="text" id="account" placeholder="Enter Account Number">
+      <input type="text" id="aadhaar" placeholder="Enter Aadhaar Number">
+      <button onclick="addCustomer()">Add Customer</button>
+      <button onclick="goBack()" style="background-color: #888;">Back</button>
+    </div>
+
+    <div id="searchContainer">
+      <input type="text" id="search" placeholder="Search by Name, Mobile, Account or Aadhaar Number">
+      <button onclick="searchCustomer()">Search</button>
+    </div>
+
+    <table id="customerTable" style="display: none;">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Mobile</th>
+          <th>Customer ID</th>
+          <th>Account</th>
+          <th>Aadhaar</th>
+        </tr>
+      </thead>
+      <tbody id="customerBody"></tbody>
+    </table>
+  </div>
+
+  <div class="footer">
+    <p>© 2025 SHOAIB CSC CENTER - All Rights Reserved</p>
+  </div>
+
+  <script>
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbynTgNrzWGaztIdjELaKWtRsDKwoDED7Vxe_GGBe87RWSY0OJb2YCTAY5Lb20rGaSOP/exec';
+    let customerData = [];
+
+    function toggleAddCustomerForm() {
+      document.getElementById("addCustomerForm").style.display = "block";
+      document.getElementById("searchContainer").style.display = "none";
+      document.getElementById("customerTable").style.display = "none";
+    }
+
+    function goBack() {
+      document.getElementById("addCustomerForm").style.display = "none";
+      document.getElementById("searchContainer").style.display = "block";
+    }
+
+    async function addCustomer() {
+      const name = document.getElementById("name").value;
+      const mobile = document.getElementById("mobile").value;
+      const customerId = document.getElementById("customerId").value;
+      const account = document.getElementById("account").value;
+      const aadhaar = document.getElementById("aadhaar").value;
+
+      if (name && mobile && customerId && account && aadhaar) {
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('mobile', mobile);
+        formData.append('customerId', customerId);
+        formData.append('account', account);
+        formData.append('aadhaar', aadhaar);
+
+        try {
+          await fetch(scriptURL, { method: 'POST', body: formData });
+          alert("Customer added successfully!");
+          document.getElementById("name").value = "";
+          document.getElementById("mobile").value = "";
+          document.getElementById("customerId").value = "";
+          document.getElementById("account").value = "";
+          document.getElementById("aadhaar").value = "";
+          goBack();
+          fetchAllCustomers();
+        } catch (error) {
+          alert("Error adding customer.");
+        }
+      } else {
+        alert("Please fill all the fields.");
+      }
+    }
+
+    async function fetchAllCustomers() {
+      try {
+        const res = await fetch(scriptURL);
+        const data = await res.json();
+        customerData = data;
+        displayData(data);
+      } catch (error) {
+        alert("Error fetching customer data.");
+      }
+    }
+
+    function displayData(data) {
+      const table = document.getElementById("customerTable");
+      const tbody = document.getElementById("customerBody");
+      tbody.innerHTML = "";
+
+      data.forEach(c => {
+        const row = `<tr>
+          <td>${c.name || ''}</td>
+          <td>${c.mobile || ''}</td>
+          <td>${c.customerId || ''}</td>
+          <td>${c.account || ''}</td>
+          <td>${c.aadhaar || ''}</td>
+        </tr>`;
+        tbody.innerHTML += row;
+      });
+
+      table.style.display = "table";
+    }
+
+    function searchCustomer() {
+      const query = document.getElementById("search").value.toLowerCase();
+      const filtered = customerData.filter(c =>
+        (c.name && c.name.toLowerCase().includes(query)) ||
+        (c.mobile && c.mobile.includes(query)) ||
+        (c.account && c.account.includes(query)) ||
+        (c.aadhaar && c.aadhaar.includes(query))
+      );
+      displayData(filtered);
+    }
+
+    // Load data on page load
+    window.onload = fetchAllCustomers;
+  </script>
+</body>
+</html>
